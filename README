@@ -1,2 +1,1 @@
-A homemade shell with many functionalities including directory changing, listing. Also included is batch command capabilities. Given a file of commands, 
-this shell is capable of executing them
+A homemade shell with many functionalities including directory changing, listing. Also included is batch command capabilities. Given a file of commands, this shell is capable of executing them
