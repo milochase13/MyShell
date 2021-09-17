@@ -86,7 +86,6 @@ char** batch_handler(char* file){
     char* buffer = (char*)malloc(sizeof(char) * 2000);
     int ammount = read(fd, buffer, 2000);
     char** lines = (char**)malloc(sizeof(char*) * ammount);
-
     char* save;
     char* line = strtok_r(buffer, "\n", &save);
     int i = 0;
@@ -110,7 +109,6 @@ char* clean_redirect(char* str){
     return out;
 }
 char* clean_redirect2(char* str){
-    //myPrint(str);
     char* out = (char*)malloc(sizeof(char)*strlen(str));
     int i = 0;
     while(str[i]){
@@ -120,7 +118,6 @@ char* clean_redirect2(char* str){
         i++;
     }
     strcpy(out,str);
-    //myPrint(str);
     return out;
 }
 
@@ -141,7 +138,6 @@ char* get_redirect_str(char* str){
 void sigexit(){
     exit(0);
 }
-
 
 char** parse(char* input){
     char cpy[514];
@@ -183,7 +179,6 @@ char** get_coms(int size, char* line){
 
 char** clean(char* line, int* size){
     char* cpy = (char*)malloc(sizeof(char) * 514);
-    //char cpy[514];
     strcpy(cpy, line);
     char** divided2 = (char**)malloc(sizeof(char*) * 512);
     char* save;
