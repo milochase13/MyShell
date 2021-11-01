@@ -7,11 +7,18 @@
 #include <signal.h>
 #include <errno.h>
 
+/*
+ * Helper function for debugging
+ */
+
 void myPrint(char *msg)
 {
     write(STDOUT_FILENO, msg, strlen(msg));
 }
 
+/*
+ * Helper function for redirect search functionality
+ */
 int redirect_search(char* argv){
     int i = 0;
     while(argv[i]){
@@ -27,6 +34,9 @@ int redirect_search(char* argv){
     return 0;
 }
 
+/*
+ * Helper function to check for white lines
+ */
 int white_line(char* pinput){
     for (int i =0; i < strlen(pinput); i++){
         if(pinput[i] != ' ' && pinput[i] != '\n' && pinput[i] != '\t'){
@@ -36,6 +46,9 @@ int white_line(char* pinput){
     return 1;
 }
 
+/*
+ * Helper function to check for empty words
+ */
 int empty_word(char* word){
     if(strlen(word) == 0){
         return 1;
@@ -48,6 +61,9 @@ int empty_word(char* word){
     return 1;
 }
 
+/*
+ * Helper function to divide command line input into array of single commands
+ */
 char** divider(char* argv, int* out){
     int count = 0;
     char** divided = (char**)malloc(sizeof(char*)*514);
@@ -67,6 +83,9 @@ char** divider(char* argv, int* out){
     return divided;
 }
 
+/*
+ * Helper function to fix formatting of commands
+ */
 char** formatter(char* argv){
     char** formatted = (char**)malloc(sizeof(char*)*514);
     char* save;
@@ -81,6 +100,9 @@ char** formatter(char* argv){
     return formatted;
 }
 
+/*
+ * Handler function for batch files
+ */
 char** batch_handler(char* file){
     int fd = open(file, O_RDWR);
     char* buffer = (char*)malloc(sizeof(char) * 2000);
@@ -97,6 +119,9 @@ char** batch_handler(char* file){
     return lines;
 }
 
+/*
+ * Helper function for formatting a command to prime it for redirect functionality
+ */
 char* clean_redirect(char* str){
     char* out = (char*)malloc(sizeof(char)*strlen(str));
     out = str;
@@ -108,6 +133,7 @@ char* clean_redirect(char* str){
     }
     return out;
 }
+
 char* clean_redirect2(char* str){
     char* out = (char*)malloc(sizeof(char)*strlen(str));
     int i = 0;
@@ -121,6 +147,9 @@ char* clean_redirect2(char* str){
     return out;
 }
 
+/*
+ * Helper function to return command before redirect symbol
+ */
 char* get_redirect_str(char* str){
     int len = strlen(str);
     char* out = (char*)malloc(sizeof(char)*len);
@@ -139,6 +168,9 @@ void sigexit(){
     exit(0);
 }
 
+/*
+ * Helper function for parsing a command into an array of string which can be fed into sys.
+ */
 char** parse(char* input){
     char cpy[514];
     strcpy(cpy, input);
@@ -159,6 +191,9 @@ char** parse(char* input){
     return divided;
 }
 
+/*
+ * Helper function to get array of commands
+ */
 char** get_coms(int size, char* line){
     char cpy[514];
     strcpy(cpy, line);
@@ -177,6 +212,10 @@ char** get_coms(int size, char* line){
     return divided;
 }
 
+
+/*
+ * Helper function to properly format an array of commands
+ */
 char** clean(char* line, int* size){
     char* cpy = (char*)malloc(sizeof(char) * 514);
     strcpy(cpy, line);
@@ -199,7 +238,9 @@ char** clean(char* line, int* size){
     return divided2;
 }
 
-
+/*
+ * Helper function to keep track of command line parsing status
+ */
 void word_status(char* input, int* red, int* adv, int* num){
     int before = 0;
     int state = 0;
@@ -241,6 +282,9 @@ void word_status(char* input, int* red, int* adv, int* num){
     }
 }
 
+/*
+ * Handler for redirection functionality
+ */
 void redirection_handler(const char* com, char** words, int size){
     const char* file = words[size];
     int fd = open(file, O_RDWR | O_CREAT | O_EXCL, 00600);
@@ -262,6 +306,9 @@ void redirection_handler(const char* com, char** words, int size){
     }
 }
 
+/*
+ * Handler for advanced redirection functionality
+ */
 void advanced_handler(const char* com, char** words, int size){
     const char* com2 = (const char*)com;
     const char* file = words[size];
@@ -320,6 +367,9 @@ int only_red(char* str){
     return 0;
 }
 
+/*
+ * Execute main process
+ */
 int main(int argc, char *argv[]) 
 {
     char cmd_buff[20000];
@@ -328,7 +378,9 @@ int main(int argc, char *argv[])
     FILE * fl;
     char* get;
     char ln [1500];
-
+    
+    // Check for edge cases
+    
     if(argc > 2){
         char error_message[30] = "An error has occurred\n";
         write(STDOUT_FILENO, error_message, strlen(error_message));
@@ -346,9 +398,17 @@ int main(int argc, char *argv[])
     }
 
     int start = 1;
-
+    
+    // Enter execution loop
+    
     while (1) {
+        
+        // If batch
+        
         if(batch == 1){
+            
+            // Read line and parse
+            
             get = fgets(ln, 1500, fl);
             if(start && !get){
                 exit(0);
@@ -371,6 +431,9 @@ int main(int argc, char *argv[])
                 exit(0);
             }
         }
+        
+        // Otherwise, prepare for another command
+        
         else{
             myPrint("myshell> ");
             pinput = fgets(cmd_buff, 20000, stdin);
@@ -378,6 +441,7 @@ int main(int argc, char *argv[])
         if (!pinput) {
             exit(0);
         }
+        
         if(strlen(pinput) < 514){
             int red = 0;
             int adv = 0;
@@ -386,7 +450,9 @@ int main(int argc, char *argv[])
             word_status(pinput, &red, &adv, &num);
             char** commands = get_coms(num,pinput);
             for(int i = 0; i < num; i++){
-                //BUILTIN STAGE
+                
+                // Builtin commands
+                
                 int size = 0;
                 char** words = clean(commands[i], &size);
                 if(!words){
@@ -397,6 +463,9 @@ int main(int argc, char *argv[])
                     temp[0] = "temp";
                     words = temp;
                 }
+                
+                // Custom commands
+                
                 if(strcmp(words[0], "exit") == 0){
                     if(words[1]){
                         char error_message[30] = "An error has occurred\n";
@@ -444,7 +513,9 @@ int main(int argc, char *argv[])
                         repeat = 1;
                     }        
                 }
-                //NON BUILTIN STAGE
+                
+                //Non builtin Stage
+                
                 if(repeat == 0){
                     int pid = fork();
                     int status;
