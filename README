@@ -1,4 +1,4 @@
-A homemade shell with many functionalities including directory changing, listing. 
+A homemade shell with many functionalities including directory changing, listing, and other standard features. 
 
 Additional Features: 
 * Batch command capabilities. Given a file of commands, this shell is capable of executing all of them in order. 
