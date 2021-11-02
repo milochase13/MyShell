@@ -6,5 +6,5 @@ Additional Features:
 * Advanced redirection of outputs to a file which already contains data, inserting new values at the top of the file. 
 * Multiple commands can be executed on one line by dividing them with a semi-colon. 
 
-Whitespaces are ignored. Developed my me in CS154 @ UChicago
+Whitespaces are ignored. Developed by me in CS154 @ UChicago
 
